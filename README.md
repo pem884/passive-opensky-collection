@@ -6,7 +6,7 @@ Python 3.x repo for passively collecting data from OpenSky using the OpenSky API
 
 ### OpenSky Account
 
-You will need to obtain an OpenSky account for accessing their data to full capacity. Account rresgistration can be found here: [Register](https://opensky-network.org/index.php?option=com_users&view=registration).
+You will need to obtain an OpenSky account for accessing their data to full capacity. Account registration can be found here: [Register](https://opensky-network.org/index.php?option=com_users&view=registration).
 
 ### OpenSky API
 

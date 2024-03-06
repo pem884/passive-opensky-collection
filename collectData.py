@@ -18,6 +18,33 @@ BBOX = tuple(args.bbox)
 USERNAME = args.username
 PASSWORD = args.password
 
+# Time interval in seconds between API requests. Default: 5
+# Note that script was written with this default in mind. Altering value may cause issues.
+REQUESTINTERVAL = 15
+
+# Number of requests at which the script will output data to a new savefile. Default: 720
+# Note that script was written with this default in mind. Altering value may cause issues.
+REQUESTSBETWEENSAVES = 10
+
+def get_formatted_datetime() -> str:
+    """Function returning the current datetime as string, formatted as Y/m/d H:M:S"""
+    timeinfo = time.gmtime()
+    formatted_datetime = time.strftime("%Y/%m/%d %H:%M:%S", timeinfo)
+    return formatted_datetime
+
+def get_datetime_parts() -> tuple[str, str, str, str, str, str]:
+    """Function returning a tuple of strings representing parts of the current GMT datetime."""
+    timeinfo = time.gmtime()
+    datetime_parts = (
+        time.strftime("%Y", timeinfo),
+        time.strftime("%m", timeinfo),
+        time.strftime("%d", timeinfo),
+        time.strftime("%H", timeinfo),
+        time.strftime("%M", timeinfo),
+        time.strftime("%S", timeinfo)
+    )
+    return datetime_parts
+
 cols = ['alert', 'altitude', 'callsign', 'geoaltitude', 'groundspeed', 'hour',
         'icao24', 'last_position', 'latitude', 'longitude', 'onground', 'spi',
         'squawk', 'timestamp', 'track', 'vertical_rate']
@@ -43,10 +70,10 @@ vertical_rate = []
 
 # hour represents the hour since the python script began, not the
 # hour of the day
-record_hour = 0
+RECORD_HOUR = 0
 
 # counting the number of states collecting
-counter = 0
+COUNTER = 0
 
 while True:
     start = time.time()
@@ -55,8 +82,7 @@ while True:
     try:
         states = api.get_states(time_secs=time.time(),bbox=BBOX)
     except:
-        ##OpenSky data is updated every 5 seconds so sleep for 5
-        time.sleep(5)
+        time.sleep(REQUESTINTERVAL)
         continue
 
 
@@ -75,8 +101,14 @@ while True:
             callsign.append(s.callsign)
             last_position.append(datetime.datetime.fromtimestamp(s.time_position))
             timestamp.append(datetime.datetime.fromtimestamp(s.last_contact))
-            date_info = time.gmtime(s.last_contact)
-            hour.append(datetime.datetime(date_info.tm_year,date_info.tm_mon,date_info.tm_mday,date_info.tm_hour))
+            date_info = time.gmtime(seconds=s.last_contact)
+            hour.append(datetime.datetime(
+                            year = date_info.tm_year,
+                            month = date_info.tm_mon,
+                            day = date_info.tm_mday,
+                            hour = date_info.tm_hour
+                            )
+                        )
             spi.append(s.spi)
             squawk.append(s.squawk)
             alert.append(False)
@@ -84,24 +116,15 @@ while True:
 
 
 
-
-
     # this will occur if there is no data in states
-    except ValueError:
-        timeinfo = time.gmtime()
+    except:
 
-        day = timeinfo.tm_mday
-        month = timeinfo.tm_mon
-        year = timeinfo.tm_year
-        hr = timeinfo.tm_hour
-        minute = timeinfo.tm_min
-        sec = timeinfo.tm_sec
+        print(f'Error collecting data for {get_formatted_datetime()}')
 
-        print("Error collecting data for {}/{}/{} {}:{}:{}".format(year,month,day,hr,minute,sec))
         end = time.time()
 
-        if not abs(end-start) > 5:
-            time.sleep(5-abs(end-start))
+        if not abs(end-start) > REQUESTINTERVAL:
+            time.sleep(REQUESTINTERVAL-abs(end-start))
         continue
 
 
@@ -109,26 +132,16 @@ while True:
     end = time.time()
 
     # We only want to collect data at most every 5 seconds
-    if not abs(end-start) > 5:
-        time.sleep(5-abs(end-start))
+    if not abs(end-start) > REQUESTINTERVAL:
+        time.sleep(REQUESTINTERVAL-abs(end-start))
 
-    counter += 1
+    COUNTER += 1
 
 
     ## ~ 1 hour worth of data: 3600 seconds / 5 seconds data collection
     ## This could be updated based on the start time.time() and the current time.time()
     ## to make this exactly 1 hour instead of ~ 1 hour
-    if counter == 720:
-
-
-        timeinfo = time.gmtime()
-
-        day = timeinfo.tm_mday
-        month = timeinfo.tm_mon
-        year = timeinfo.tm_year
-        hr = timeinfo.tm_hour
-        minute = timeinfo.tm_min
-        sec = timeinfo.tm_sec
+    if COUNTER == REQUESTSBETWEENSAVES:
 
         # convert data to a matrix of (N, 2)
         opensky_data = np.vstack([alert, altitude, callsign, geoaltitude, groundspeed,
@@ -154,15 +167,19 @@ while True:
         vertical_rate = []
 
         # save data
-        os.makedirs("data/{}/{}/{}/".format(year,month,day),exist_ok=True)
+        path_datetimes = get_datetime_parts()
+        dir_name = f'data/{path_datetimes[0]}/{path_datetimes[1]}/{path_datetimes[2]}/'
+        hr = path_datetimes[3]
+        minute = path_datetimes[4]
+        os.makedirs(name=dir_name, exist_ok=True)
 
-        if not os.path.isfile('data/{}/{}/{}/{}.npy'.format(year,month,day,hr)):
-            np.savez_compressed('data/{}/{}/{}/{}.npz'.format(year,month,day,hr),data=opensky_data)
+        if not os.path.isfile(path=f'{dir_name}{hr}.npy'):
+            np.savez_compressed(file=f'{dir_name}{hr}.npz', data=opensky_data)
 
         else:
-            np.savez_compressed('data/{}/{}/{}/{}_{}.npz'.format(year,month,day,hr,minute),data=opensky_data)
+            np.savez_compressed(file=f'{dir_name}{hr}_{minute}.npz', data=opensky_data)
 
-        record_hour += 1
-        counter = 0
+        RECORD_HOUR += 1
+        COUNTER = 0
 
-        print("Hours Processed: {}".format(record_hour))
+        print(f"Hours Processed: {RECORD_HOUR}")

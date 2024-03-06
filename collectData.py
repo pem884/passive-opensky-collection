@@ -95,7 +95,7 @@ while True:
         minute = timeinfo.tm_min
         sec = timeinfo.tm_sec
 
-        print("Error collecting data for {}/{}/{}/{}:{}".format(year,month,day,hr,minute,sec))
+        print("Error collecting data for {}/{}/{} {}:{}:{}".format(year,month,day,hr,minute,sec))
         end = time.time()
 
         if not abs(end-start) > 5:

@@ -136,6 +136,7 @@ while True:
         time.sleep(REQUESTINTERVAL-abs(end-start))
 
     COUNTER += 1
+    print(f'DEBUG:  Iteration counter =   {COUNTER}')
 
 
     ## ~ 1 hour worth of data: 3600 seconds / 5 seconds data collection
@@ -180,6 +181,9 @@ while True:
             np.savez_compressed(file=f'{dir_name}{hr}_{minute}.npz', data=opensky_data)
 
         RECORD_HOUR += 1
+        print(f'DEBUG:  RECORD_HOUR =   {RECORD_HOUR}')
+
         COUNTER = 0
+        print(f'DEBUG:  Resetting COUNTER')
 
         print(f"Hours Processed: {RECORD_HOUR}")

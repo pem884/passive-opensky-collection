@@ -1,9 +1,11 @@
-from opensky_api import OpenSkyApi
+"""Module for passively collecting data from OpenSky using the OpenSky API."""
+
+import argparse
+import datetime
 import time
 import os
 import numpy as np
-import argparse
-import datetime
+from opensky_api import OpenSkyApi
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--username", help="OpenSky Username")
@@ -85,7 +87,7 @@ while True:
 
 
     # this will occur if there is no data in states
-    except:
+    except ValueError:
         timeinfo = time.gmtime()
 
         day = timeinfo.tm_mday

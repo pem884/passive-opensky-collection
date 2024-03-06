@@ -66,7 +66,7 @@ while True:
             longitude.append(s.longitude)
             geoaltitude.append(s.geo_altitude)
             altitude.append(s.baro_altitude)
-            track.append(s.heading)
+            track.append(s.true_track)
             icao24.append(s.icao24)
             groundspeed.append(s.velocity)
             vertical_rate.append(s.vertical_rate)

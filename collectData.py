@@ -101,7 +101,7 @@ while True:
             callsign.append(s.callsign)
             last_position.append(datetime.datetime.fromtimestamp(s.time_position))
             timestamp.append(datetime.datetime.fromtimestamp(s.last_contact))
-            date_info = time.gmtime(seconds=s.last_contact)
+            date_info = time.gmtime(s.last_contact)
             hour.append(datetime.datetime(
                             year = date_info.tm_year,
                             month = date_info.tm_mon,

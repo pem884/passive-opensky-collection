@@ -24,7 +24,7 @@ REQUESTINTERVAL = 15
 
 # Number of requests at which the script will output data to a new savefile. Default: 720
 # Note that script was written with this default in mind. Altering value may cause issues.
-REQUESTSBETWEENSAVES = 10
+REQUESTSBETWEENSAVES = 240
 
 def get_formatted_datetime() -> str:
     """Function returning the current datetime as string, formatted as Y/m/d H:M:S"""

@@ -18,6 +18,13 @@ BBOX = tuple(args.bbox)
 USERNAME = args.username
 PASSWORD = args.password
 
+# counting the number of states collecting
+COUNTER = 0
+
+# hour represents the hour since the python script began, not the
+# hour of the day
+RECORD_HOUR = 0
+
 # Time interval in seconds between API requests. Default: 5
 # Note that script was written with this default in mind. Altering value may cause issues.
 REQUESTINTERVAL = 15
@@ -66,14 +73,6 @@ squawk = []
 timestamp = []
 track = []
 vertical_rate = []
-
-
-# hour represents the hour since the python script began, not the
-# hour of the day
-RECORD_HOUR = 0
-
-# counting the number of states collecting
-COUNTER = 0
 
 while True:
     start = time.time()

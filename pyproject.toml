@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "passive-opensky-collection"
+version = "1.1.1"
+description = "Python 3.x repo for passively collecting data from OpenSky using the OpenSky API."
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.x"
+numpy = "^1.26.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

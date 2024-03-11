@@ -80,7 +80,7 @@ while True:
 
     try:
         states = api.get_states(time_secs=time.time(),bbox=BBOX)
-    except:
+    except Exception:
         time.sleep(REQUESTINTERVAL)
         continue
 
@@ -116,7 +116,7 @@ while True:
 
 
     # this will occur if there is no data in states
-    except:
+    except Exception:
 
         print(f'Error collecting data for {get_formatted_datetime()}')
 

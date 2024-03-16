@@ -10,11 +10,12 @@ from opensky_api import OpenSkyApi
 parser = argparse.ArgumentParser()
 parser.add_argument("--username", help="OpenSky Username")
 parser.add_argument("--password", help="OpenSky Password")
+parser.add_argument('--gzip', type=str)
 parser.add_argument('--bbox', nargs='+', type=float)
 args = parser.parse_args()
 
-
 BBOX = tuple(args.bbox)
+GZIP = args.gzip
 USERNAME = args.username
 PASSWORD = args.password
 
@@ -172,11 +173,15 @@ while True:
         minute = path_datetimes[4]
         os.makedirs(name=dir_name, exist_ok=True)
 
-        if not os.path.isfile(path=f'{dir_name}{hr}.npy'):
-            np.savez_compressed(file=f'{dir_name}{hr}.npz', data=opensky_data)
+        if GZIP == 'True':
+            np.savetxt(f'{dir_name}{hr}.gz', opensky_data, delimiter=",")
 
         else:
-            np.savez_compressed(file=f'{dir_name}{hr}_{minute}.npz', data=opensky_data)
+            if not os.path.isfile(path=f'{dir_name}{hr}.npy'):
+                np.savez_compressed(file=f'{dir_name}{hr}.npz', data=opensky_data)
+
+            else:
+                np.savez_compressed(file=f'{dir_name}{hr}_{minute}.npz', data=opensky_data)
 
         RECORD_HOUR += 1
         COUNTER = 0

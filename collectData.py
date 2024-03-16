@@ -2,6 +2,7 @@
 
 import argparse
 import datetime
+import logging
 import time
 import os
 import numpy as np
@@ -18,6 +19,8 @@ BBOX = tuple(args.bbox)
 GZIP = args.gzip
 USERNAME = args.username
 PASSWORD = args.password
+
+logging.debug(f'BBOX = {BBOX}\nGZIP = {GZIP}')
 
 # counting the number of states collecting
 COUNTER = 0
@@ -81,6 +84,7 @@ while True:
 
     try:
         states = api.get_states(time_secs=time.time(),bbox=BBOX)
+        logging.debug(states)
     except Exception:
         time.sleep(REQUESTINTERVAL)
         continue
@@ -136,17 +140,21 @@ while True:
         time.sleep(REQUESTINTERVAL-abs(end-start))
 
     COUNTER += 1
+    logging.debug('COUNTER incremented: %s', COUNTER)
 
 
     ## ~ 1 hour worth of data: 3600 seconds / 5 seconds data collection
     ## This could be updated based on the start time.time() and the current time.time()
     ## to make this exactly 1 hour instead of ~ 1 hour
     if COUNTER == REQUESTSBETWEENSAVES:
+        logging.debug('Saving because COUNTER == REQUESTSBETWEENSAVES')
 
         # convert data to a matrix of (N, 2)
         opensky_data = np.vstack([alert, altitude, callsign, geoaltitude, groundspeed,
                             hour, icao24, last_position, latitude, longitude,
                             onground, spi, squawk, timestamp, track, vertical_rate]).T
+
+        logging.debug('Data to save:\n%s', opensky_data)
 
         alert = []
         # baro altitude
@@ -166,6 +174,8 @@ while True:
         track = []
         vertical_rate = []
 
+        logging.debug('Cleared opensky_data attributes.')
+
         # save data
         path_datetimes = get_datetime_parts()
         dir_name = f'data/{path_datetimes[0]}/{path_datetimes[1]}/{path_datetimes[2]}/'
@@ -175,13 +185,16 @@ while True:
 
         if GZIP:
             np.savetxt(f'{dir_name}{hr}.gz', opensky_data, fmt='%s', delimiter=",")
+            logging.debug('Saved as gzip to %s%s.gz', dir_name, hr)
 
         else:
             if not os.path.isfile(path=f'{dir_name}{hr}.npy'):
                 np.savez_compressed(file=f'{dir_name}{hr}.npz', data=opensky_data)
+                logging.debug('Saved as npy to %s%s.npz', dir_name, hr)
 
             else:
                 np.savez_compressed(file=f'{dir_name}{hr}_{minute}.npz', data=opensky_data)
+                logging.debug('Saved as npz to %s%s_%s.npz', dir_name, hr, minute)
 
         RECORD_HOUR += 1
         COUNTER = 0

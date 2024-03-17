@@ -13,7 +13,14 @@ parser.add_argument("--username", help="OpenSky Username")
 parser.add_argument("--password", help="OpenSky Password")
 parser.add_argument('--gzip', action='store_true')
 parser.add_argument('--bbox', nargs='+', type=float)
+parser.add_argument('-log',
+                    '--loglevel',
+                    default='warning',
+                    help='Provide logging level. Example --loglevel debug, default=warning' )
 args = parser.parse_args()
+
+logging.basicConfig( level=args.loglevel.upper() )
+logging.info( 'Logging configured.' )
 
 BBOX = tuple(args.bbox)
 GZIP = args.gzip

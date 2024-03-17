@@ -11,7 +11,7 @@ from opensky_api import OpenSkyApi
 parser = argparse.ArgumentParser()
 parser.add_argument("--username", help="OpenSky Username")
 parser.add_argument("--password", help="OpenSky Password")
-parser.add_argument('--gzip', type=str)
+parser.add_argument('--gzip', action='store_true')
 parser.add_argument('--bbox', nargs='+', type=float)
 args = parser.parse_args()
 

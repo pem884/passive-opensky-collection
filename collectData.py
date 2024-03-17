@@ -15,8 +15,8 @@ parser.add_argument('--gzip', action='store_true')
 parser.add_argument('--bbox', nargs='+', type=float)
 parser.add_argument('-log',
                     '--loglevel',
-                    default='warning',
-                    help='Provide logging level. Example --loglevel debug, default=warning' )
+                    default='info',
+                    help='Provide logging level: critical/error/warning/info/debug. Example --loglevel debug, default=warning')
 args = parser.parse_args()
 
 logging.basicConfig( level=args.loglevel.upper() )

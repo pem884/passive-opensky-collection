@@ -20,7 +20,7 @@ GZIP = args.gzip
 USERNAME = args.username
 PASSWORD = args.password
 
-logging.debug(f'BBOX = {BBOX}\nGZIP = {GZIP}')
+logging.debug('BBOX = %s\nGZIP = %s', BBOX, GZIP)
 
 # counting the number of states collecting
 COUNTER = 0
